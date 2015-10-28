@@ -1,0 +1,73 @@
+
+# Jenkins
+# ---
+# jenkins:
+#   container_name: jenkins
+#   build: ./images/jenkins
+
+# API
+# ---
+api-service:
+  container_name: api-service
+  # build: ./images/api-service
+  image: php:5.4-apache
+  # ports:
+  #   - "80:80"
+  volumes:
+    - ./src/api-service:/var/www/html
+  # links:
+  #   - api-db
+
+# api-db-data:
+#   container_name: api-db-data
+#   image: mysql
+#   volumes:
+#     - ./data/api:/var/lib/mysql
+#
+# api-db:
+#   container_name: api-db
+#   image: mysql
+#   environment:
+#     - MYSQL_DATABASE=pcms_db
+#     - MYSQL_USER=pcms_user
+#     - MYSQL_PASSWORD=root
+#   volumes_from:
+#     - api-db-data
+
+interface-service:
+  container_name: interface-service
+  # build: ./images/interface-service
+  image: php:5.4-apache
+  volumes:
+    - ./src/interface-service:/var/www/html
+  # links:
+  #   - interface-db
+
+# interface-db-data:
+#   container_name: interface-db-data
+#   image: mysql
+#   volumes:
+#     - ./data/interface:/var/lib/mysql
+#
+# interface-db:
+#   container_name: interface-db
+#   image: mysql
+#   environment:
+#     - MYSQL_DATABASE=pcms_db
+#     - MYSQL_USER=pcms_user
+#     - MYSQL_PASSWORD=root
+#   volumes_from:
+#     - interface-db-data
+
+# Proxy Service
+# ---
+reverse-proxy-service:
+  container_name: reverse-proxy
+  build: ./images/reverse-proxy
+  ports:
+    - "80:80"
+  volumes:
+    - ./config/reverse-proxy-service:/etc/nginx/conf.d
+  links:
+    - api-service
+    - interface-service
